@@ -17,9 +17,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_DB=car_shop
-      - POSTGRES_USER=whitesnake_user
-      - POSTGRES_PASSWORD=whitesnake
+      - POSTGRES_DB=$POSTGRES_NAME
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
     ports:
       - "5433:5432"
 
