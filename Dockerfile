@@ -12,3 +12,5 @@ COPY Pipfile.lock /usr/src/app/
 RUN pipenv install --system --deploy
 
 COPY . /usr/src/app/
+
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
