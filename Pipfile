@@ -4,11 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
-psycopg2-binary = "*"
-django-countries = "*"
-base = "*"
-flake8 = "*"
+django = "4.1"
+django-countries = "7.3.2"
+base = "1.0.4"
+djangorestframework = "3.13.1"
+django-phonenumber-field = {extras = ["phonenumbers"], version = "8.12.53"}
+psycopg2-binary = "2.9.3"
 
 [dev-packages]
 

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "1a2a805566b90b9f40fba795dfc264cfc7cbc6114c92aca6fcec8e68bcdfa295"
+            "sha256": "13c397c02c2fa91d7a157eb986d6fe111ae1de20c162088088532d12f62a38aa"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -47,21 +47,31 @@
             "index": "pypi",
             "version": "==7.3.2"
         },
-        "flake8": {
+        "django-phonenumber-field": {
+            "extras": [
+                "phonenumbers"
+            ],
             "hashes": [
-                "sha256:6fbe320aad8d6b95cec8b8e47bc933004678dc63095be98528b7bdd2a9f510db",
-                "sha256:7a1cf6b73744f5806ab95e526f6f0d8c01c66d7bbe349562d22dfca20610b248"
+                "sha256:188ca55b27ef1ac4d9b279d90ee3f1377ece6cd9ed8c63f0a66efd565bf9ad6f",
+                "sha256:668db2e61559908ce8dcd660ac716262c7922cc29ec76ede3f9b88772992dc28"
             ],
             "index": "pypi",
-            "version": "==5.0.4"
+            "version": "==6.3.0"
         },
-        "mccabe": {
+        "djangorestframework": {
             "hashes": [
-                "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325",
-                "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"
+                "sha256:0c33407ce23acc68eca2a6e46424b008c9c02eceb8cf18581921d0092bc1f2ee",
+                "sha256:24c4bf58ed7e85d1fe4ba250ab2da926d263cd57d64b03e8dcef0ac683f8b1aa"
             ],
-            "markers": "python_version >= '3.6'",
-            "version": "==0.7.0"
+            "index": "pypi",
+            "version": "==3.13.1"
+        },
+        "phonenumbers": {
+            "hashes": [
+                "sha256:b945c1410d52448bb560a869e0a77af343422c96da55efbb2a44c5da38df299a",
+                "sha256:ebad336027f008eed8f2fe571ecb20c574c9c52f68b85ed2e2a2519d92ed318d"
+            ],
+            "version": "==8.12.53"
         },
         "psycopg2-binary": {
             "hashes": [
@@ -125,21 +135,12 @@
             "index": "pypi",
             "version": "==2.9.3"
         },
-        "pycodestyle": {
+        "pytz": {
             "hashes": [
-                "sha256:2c9607871d58c76354b697b42f5d57e1ada7d261c261efac224b664affdc5785",
-                "sha256:d1735fc58b418fd7c5f658d28d943854f8a849b01a5d0a1e6f3f3fdd0166804b"
+                "sha256:220f481bdafa09c3955dfbdddb7b57780e9a94f5127e35456a48589b9e0c0197",
+                "sha256:cea221417204f2d1a2aa03ddae3e867921971d0d76f14d87abb4414415bbdcf5"
             ],
-            "markers": "python_version >= '3.6'",
-            "version": "==2.9.1"
-        },
-        "pyflakes": {
-            "hashes": [
-                "sha256:4579f67d887f804e67edb544428f264b7b24f435b263c4614f384135cea553d2",
-                "sha256:491feb020dca48ccc562a8c0cbe8df07ee13078df59813b83959cbdada312ea3"
-            ],
-            "markers": "python_version >= '3.6'",
-            "version": "==2.5.0"
+            "version": "==2022.2.1"
         },
         "sqlparse": {
             "hashes": [

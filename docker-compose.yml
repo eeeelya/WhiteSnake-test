@@ -3,7 +3,6 @@ version: '3.8'
 services:
   web:
     build: .
-    command: python car_shop/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/usr/src.app
     ports:
@@ -17,9 +16,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_DB=$POSTGRES_NAME
-      - POSTGRES_USER=$POSTGRES_USER
-      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - POSTGRES_DB=car_shop
+      - POSTGRES_USER=whitesnake_user
+      - POSTGRES_PASSWORD=whitesnake
     ports:
       - "5433:5432"
 
