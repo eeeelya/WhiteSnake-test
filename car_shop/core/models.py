@@ -71,13 +71,13 @@ class User(AbstractUser):
 
 
 class Sale(models.Model):
+    name = models.CharField(default="", max_length=120)
     start_date = models.DateTimeField(default=datetime.datetime.now)
     end_date = models.DateTimeField(default=datetime.datetime.now)
     discount_amount = models.DecimalField(
         default=0, max_digits=2, decimal_places=2, validators=[MinValueValidator(0)]
     )
     description = models.TextField(blank=True)
-    types = models.JSONField()
 
     class Meta:
-        db_table = "sale"
+        abstract = True

@@ -4,14 +4,14 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 from client.models import Client
-from core.models import Car, SpecialInformation, User, UserInformation
+from core.models import Car, Sale, SpecialInformation, User, UserInformation
 
 
 class Shop(SpecialInformation, UserInformation):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(default="", max_length=120)
     cars = models.ManyToManyField(Car, through="ShopCar")
-    car_types = models.JSONField()
+    specification = models.JSONField()
     balance = models.DecimalField(
         default=0, max_digits=12, decimal_places=0, validators=[MinValueValidator(0)]
     )
@@ -42,3 +42,11 @@ class ShopHistory(models.Model):
 
     class Meta:
         db_table = "shop_history"
+
+
+class ShopSale(Sale):
+    car = models.ForeignKey(Car, on_delete=models.CASCADE)
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = "shop_sale"

@@ -3,7 +3,7 @@ import datetime
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from core.models import Car, SpecialInformation, User, UserInformation
+from core.models import Car, Sale, SpecialInformation, User, UserInformation
 from shop.models import Shop
 
 
@@ -27,7 +27,9 @@ class Provider(SpecialInformation, UserInformation):
 class ProviderCar(models.Model):
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
     car = models.ForeignKey(Car, on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=12, decimal_places=2)
+    price = models.DecimalField(
+        max_digits=12, decimal_places=2, validators=[MinValueValidator(0)]
+    )
 
     class Meta:
         db_table = "provider_car"
@@ -44,3 +46,11 @@ class ProviderHistory(models.Model):
 
     class Meta:
         db_table = "provider_history"
+
+
+class ProviderSale(Sale):
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = "provider_sale"
