@@ -13,30 +13,31 @@ class Shop(SpecialInformation, UserInformation):
     cars = models.ManyToManyField(Car, through="ShopCar")
     specification = models.JSONField()
     balance = models.DecimalField(
-        default=0, max_digits=12, decimal_places=0, validators=[MinValueValidator(0)]
+        default=0, max_digits=12, decimal_places=0, validators=[MinValueValidator(0.00)]
     )
 
     class Meta:
         db_table = "shop"
 
 
-class ShopCar(models.Model):
+class ShopCar(SpecialInformation):
     car = models.ForeignKey(Car, on_delete=models.CASCADE)
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     price = models.DecimalField(
-        default=0, max_digits=12, decimal_places=2, validators=[MinValueValidator(0)]
+        default=0, max_digits=12, decimal_places=2, validators=[MinValueValidator(0.00)]
     )
-    count = models.IntegerField(default=0)
+    count = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     class Meta:
         db_table = "shop_car"
 
 
-class ShopHistory(models.Model):
+class ShopHistory(SpecialInformation):
     car = models.ForeignKey(Car, on_delete=models.CASCADE)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     price = models.DecimalField(
-        default=0, max_digits=12, decimal_places=2, validators=[MinValueValidator(0)]
+        default=0, max_digits=12, decimal_places=2, validators=[MinValueValidator(0.00)]
     )
     date = models.DateTimeField(default=datetime.datetime.now)
 

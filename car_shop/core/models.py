@@ -11,7 +11,6 @@ from phonenumber_field import modelfields
 class UserInformation(models.Model):
     location = fields.CountryField()
     phone_number = modelfields.PhoneNumberField(unique=True, null=False, blank=False)
-    email = models.EmailField(max_length=120)
 
     class Meta:
         abstract = True
@@ -26,7 +25,7 @@ class SpecialInformation(models.Model):
         abstract = True
 
 
-class Car(UserInformation, SpecialInformation):
+class Car(SpecialInformation):
     FUEL_CHOICES = (
         ("P", "Petrol"),
         ("D", "Diesel"),
@@ -70,12 +69,12 @@ class User(AbstractUser):
         db_table = "user"
 
 
-class Sale(models.Model):
+class Sale(SpecialInformation):
     name = models.CharField(default="", max_length=120)
     start_date = models.DateTimeField(default=datetime.datetime.now)
     end_date = models.DateTimeField(default=datetime.datetime.now)
     discount_amount = models.DecimalField(
-        default=0, max_digits=2, decimal_places=2, validators=[MinValueValidator(0)]
+        default=0, max_digits=4, decimal_places=2, validators=[MinValueValidator(0.00)]
     )
     description = models.TextField(blank=True)
 
