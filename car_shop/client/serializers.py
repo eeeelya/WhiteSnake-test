@@ -1,8 +1,7 @@
 from rest_framework import serializers
 
+from client.models import Client
 from core.models import User
-
-from .models import Client, ClientCar
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -15,17 +14,3 @@ class ClientSerializer(serializers.ModelSerializer):
             "location",
             "phone_number",
         )
-
-
-class ClientCarSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ClientCar
-        fields = (
-            "client",
-            "car",
-            "count",
-        )
-
-    def create(self, validated_data):
-        user = User.objects.get(id=self.context["request"].user.id)
-        return Client.objects.create(user=user, **validated_data)

@@ -1,7 +1,5 @@
-import datetime
-
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from django_countries import fields
@@ -18,8 +16,8 @@ class UserInformation(models.Model):
 
 class SpecialInformation(models.Model):
     is_active = models.BooleanField(default=True)
-    created = models.DateTimeField(default=datetime.datetime.now)
-    updated = models.DateTimeField(default=datetime.datetime.now)
+    created = models.DateTimeField()
+    updated = models.DateTimeField()
 
     class Meta:
         abstract = True
@@ -44,7 +42,7 @@ class Car(SpecialInformation):
     )
 
     name = models.CharField(default="", max_length=120)
-    manufacture_year = models.DateField(default=datetime.date.today().year)
+    manufacture_year = models.DateField()
     type = models.CharField(max_length=3, choices=CAR_TYPE_CHOICES, default="Sed")
     fuel = models.CharField(max_length=1, choices=FUEL_CHOICES, default="P")
     color = models.CharField(default="", max_length=20)
@@ -71,10 +69,10 @@ class User(AbstractUser):
 
 class Sale(SpecialInformation):
     name = models.CharField(default="", max_length=120)
-    start_date = models.DateTimeField(default=datetime.datetime.now)
-    end_date = models.DateTimeField(default=datetime.datetime.now)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
     discount_amount = models.DecimalField(
-        default=0, max_digits=4, decimal_places=2, validators=[MinValueValidator(0.00)]
+        default=0, max_digits=5, decimal_places=2, validators=[MinValueValidator(0.00), MaxValueValidator(100.00)]
     )
     description = models.TextField(blank=True)
 

@@ -16,14 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+import debug_toolbar
+from car_shop.yasg import urlpatterns as doc_urls
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/v1/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/v1/login/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("__debug__/", include(debug_toolbar.urls)),
     path("api/v1/", include("core.urls")),
     path("api/v1/", include("client.urls")),
     path("api/v1/", include("provider.urls")),
     path("api/v1/", include("shop.urls")),
-]
+] + doc_urls

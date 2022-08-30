@@ -1,8 +1,7 @@
 from rest_framework import serializers
 
 from core.models import Car, User
-
-from .models import Shop, ShopCar, ShopHistory, ShopSale
+from shop.models import Shop, ShopCar, ShopHistory, ShopSale
 
 
 class ShopSerializer(serializers.ModelSerializer):
@@ -58,5 +57,5 @@ class ShopSaleSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        provider = Car.objects.get(user=self.context["request"].user)
+        provider = Car.objects.get(user=self.context["request"].user.id)
         return ShopSale.objects.create(car=provider, **validated_data)

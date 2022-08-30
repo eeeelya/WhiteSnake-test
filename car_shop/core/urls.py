@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import CarViewSet, UserViewSet
+from core.views import CarViewSet, UserViewSet
 
 router = routers.DefaultRouter()
 router.register(r"user", UserViewSet, basename="core_user")

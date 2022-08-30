@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Provider, ProviderCar, ProviderHistory, ProviderSale
+from provider.models import Provider, ProviderCar, ProviderHistory, ProviderSale
 
 admin.site.register(Provider)
 admin.site.register(ProviderCar)

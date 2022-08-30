@@ -1,15 +1,13 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from .models import Car, Sale, User
+from core.models import Car, Sale, User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(
-        required=True, validators=[UniqueValidator(queryset=User.objects.all())]
-    )
+    email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all)])
     password = serializers.CharField(write_only=True, required=True)
-    password_2 = serializers.CharField(write_only=True, required=True)
+    confirmation_password = serializers.CharField(write_only=True, required=True)  # NAME
 
     class Meta:
         model = User
@@ -20,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "user_type",
             "password",
-            "password_2",
+            "confirmation_password",
         )
         extra_kwargs = {
             "first_name": {"required": True},
@@ -28,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, attrs):
-        if attrs["password"] != attrs["password_2"]:
+        if attrs["password"] != attrs["confirmation_password"]:
             raise serializers.ValidationError({"detail": "pass != pass_2"})
 
         return attrs
@@ -71,7 +69,3 @@ class SaleSerializer(serializers.ModelSerializer):
             "discount_amount",
             "description",
         )
-
-
-class SearchSerializer(serializers.Serializer):
-    num = serializers.IntegerField()

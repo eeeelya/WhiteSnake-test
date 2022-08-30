@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Shop, ShopCar, ShopHistory, ShopSale
+from shop.models import Shop, ShopCar, ShopHistory, ShopSale
 
 admin.site.register(Shop)
 admin.site.register(ShopCar)
