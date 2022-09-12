@@ -1,3 +1,5 @@
+import datetime
+
 from rest_framework import serializers
 
 from core.models import Car, User
@@ -8,7 +10,6 @@ class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         fields = (
-            "user",
             "name",
             "specification",
             "balance",
@@ -18,7 +19,13 @@ class ShopSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.get(id=self.context["request"].user.id)
+
         return Shop.objects.create(user=user, **validated_data)
+
+    def update(self, instance, validated_data):
+        instance.updated = datetime.datetime.now()
+
+        return instance
 
 
 class ShopCarSerializer(serializers.ModelSerializer):
@@ -58,4 +65,10 @@ class ShopSaleSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         provider = Car.objects.get(user=self.context["request"].user.id)
+
         return ShopSale.objects.create(car=provider, **validated_data)
+
+    def update(self, instance, validated_data):
+        instance.updated = datetime.datetime.now()
+
+        return instance

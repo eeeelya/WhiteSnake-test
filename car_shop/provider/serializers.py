@@ -1,3 +1,5 @@
+import datetime
+
 from rest_framework import serializers
 
 from core.models import User
@@ -18,7 +20,13 @@ class ProviderSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.get(id=self.context["request"].user.id)
+
         return Provider.objects.create(user=user, **validated_data)
+
+    def update(self, instance, validated_data):
+        instance.updated = datetime.datetime.now()
+
+        return instance
 
 
 class ProviderCarSerializer(serializers.ModelSerializer):
@@ -59,3 +67,8 @@ class ProviderSaleSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         provider = Provider.objects.get(user=self.context["request"].user.id)
         return ProviderSale.objects.create(provider=provider, **validated_data)
+
+    def update(self, instance, validated_data):
+        instance.updated = datetime.datetime.now()
+
+        return instance

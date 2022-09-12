@@ -1,4 +1,6 @@
-from django.core.validators import MinValueValidator
+import datetime
+
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from core.models import Car, Sale, SpecialInformation, User, UserInformation
@@ -8,7 +10,9 @@ from shop.models import Shop
 class Provider(SpecialInformation, UserInformation):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(default="", max_length=120)
-    foundation_year = models.DateField()
+    foundation_year = models.PositiveIntegerField(
+        validators=[MinValueValidator(1900), MaxValueValidator(datetime.date.today().year)]
+    )
     total_clients = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     balance = models.DecimalField(default=0, max_digits=15, decimal_places=2, validators=[MinValueValidator(0.00)])
     cars = models.ManyToManyField(Car, through="ProviderCar")
@@ -27,11 +31,11 @@ class ProviderCar(SpecialInformation):
         db_table = "provider_car"
 
 
-class ProviderHistory(SpecialInformation):
+class ProviderHistory(models.Model):
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
     car = models.ForeignKey(Car, on_delete=models.CASCADE)
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
-    purchase_time = models.DateTimeField()
+    purchase_time = models.DateTimeField(default=datetime.datetime.now)
     price = models.DecimalField(default=0, max_digits=12, decimal_places=2, validators=[MinValueValidator(0.00)])
 
     class Meta:

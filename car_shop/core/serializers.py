@@ -5,9 +5,9 @@ from core.models import Car, Sale, User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all)])
+    email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
     password = serializers.CharField(write_only=True, required=True)
-    confirmation_password = serializers.CharField(write_only=True, required=True)  # NAME
+    confirmation_password = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User

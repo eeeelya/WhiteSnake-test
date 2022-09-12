@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -12,6 +14,7 @@ def get_default_specification():
         "type": "",
         "fuel": "",
         "color": "",
+        "price": 0,
     }
 
 
@@ -30,18 +33,18 @@ class ShopCar(SpecialInformation):
     car = models.ForeignKey(Car, on_delete=models.CASCADE)
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     price = models.DecimalField(default=0, max_digits=12, decimal_places=2, validators=[MinValueValidator(0.00)])
-    count = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    count = models.IntegerField(default=1, validators=[MinValueValidator(0)])
 
     class Meta:
         db_table = "shop_car"
 
 
-class ShopHistory(SpecialInformation):
+class ShopHistory(models.Model):
     car = models.ForeignKey(Car, on_delete=models.CASCADE)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     price = models.DecimalField(default=0, max_digits=12, decimal_places=2, validators=[MinValueValidator(0.00)])
-    date = models.DateTimeField()
+    date = models.DateTimeField(default=datetime.datetime.now)
 
     class Meta:
         db_table = "shop_history"

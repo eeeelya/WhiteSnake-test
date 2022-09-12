@@ -1,10 +1,12 @@
-from rest_framework import exceptions, status, viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from django_filters.rest_framework import DjangoFilterBackend
 from provider.models import ProviderHistory
 from provider.serializers import ProviderHistorySerializer
+from shop.filters import ShopFilter
 from shop.models import Shop, ShopCar, ShopHistory, ShopSale
 from shop.permissions import IsAdminOrSuperUserForUpdate, IsShopOrSuperUser
 from shop.serializers import ShopCarSerializer, ShopHistorySerializer, ShopSaleSerializer, ShopSerializer
@@ -14,6 +16,8 @@ class ShopViewSet(viewsets.GenericViewSet):
     queryset = Shop.objects.all()
     permission_classes = (IsAuthenticated, IsAdminOrSuperUserForUpdate)
     serializer_class = ShopSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = ShopFilter
 
     def get_queryset(self):
         return Shop.objects.filter(is_active=True)
@@ -105,6 +109,10 @@ class ShopViewSet(viewsets.GenericViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({"detail": "shop doesn't have history with providers"}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=False, methods=["get"])
+    def statistics(self, request):
+        pass
 
 
 class ShopSaleViewSet(viewsets.GenericViewSet):

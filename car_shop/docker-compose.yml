@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+#    command: gunicorn car_shop.wsgi:application --bind 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/app
+#      - static:/usr/src/app/static
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+      - celery
+      - celery_beat
+
+  db:
+    image: postgres:14-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=car_shop
+      - POSTGRES_USER=whitesnake_user
+      - POSTGRES_PASSWORD=whitesnake
+    ports:
+      - "5433:5432"
+
+  redis:
+    image: redis
+    restart: always
+
+  celery:
+    restart: always
+    build:
+      context: .
+    command: celery -A car_shop worker -l info
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - redis
+    env_file:
+      - .env
+
+  celery_beat:
+    build: .
+    command: celery -A car_shop beat -l info
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - redis
+    env_file:
+      - .env
+
+#  nginx:
+#    restart: always
+#    image: nginx:1.23-alpine
+#    expose:
+#      - 8080
+#    ports:
+#      - "80:8080"
+#    volumes:
+#      - static:/usr/src/app/static
+#    depends_on:
+#      - web
+
+volumes:
+  postgres_data:
+#  static:

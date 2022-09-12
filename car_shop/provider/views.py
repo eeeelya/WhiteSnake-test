@@ -3,6 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from django_filters.rest_framework import DjangoFilterBackend
+from provider.filters import ProviderFilter
 from provider.models import Provider, ProviderCar, ProviderHistory, ProviderSale
 from provider.permissions import IsAdminOrSuperUserForUpdate, IsProviderOrSuperUser
 from provider.serializers import (
@@ -17,6 +19,8 @@ class ProviderViewSet(viewsets.GenericViewSet):
     queryset = Provider.objects.all()
     permission_classes = (IsAuthenticated, IsAdminOrSuperUserForUpdate)
     serializer_class = ProviderSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = ProviderFilter
 
     def get_queryset(self):
         return Provider.objects.filter(is_active=True)
@@ -89,6 +93,10 @@ class ProviderViewSet(viewsets.GenericViewSet):
         serializer = ProviderHistorySerializer(history, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["get"])
+    def statistics(self, request):
+        pass
 
 
 class ProviderSaleViewSet(viewsets.GenericViewSet):

@@ -1,22 +1,23 @@
-from rest_framework import exceptions, mixins, status, viewsets
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from client.filters import ClientFilter
 from client.models import Client
 from client.permissions import IsAdminOrSuperUserForUpdate
 from client.serializers import ClientSerializer
+from django_filters.rest_framework import DjangoFilterBackend
 from shop.models import ShopHistory
 from shop.serializers import ShopHistorySerializer
 
 
-class ClientViewSet(
-    mixins.CreateModelMixin,
-    viewsets.GenericViewSet,
-):
+class ClientViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     permission_classes = (IsAuthenticated, IsAdminOrSuperUserForUpdate)
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = ClientFilter
 
     def get_queryset(self):
         return Client.objects.filter(is_active=True)
@@ -78,3 +79,7 @@ class ClientViewSet(
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({"detail": "client doesn't have history"}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=False, methods=["get"])
+    def statistics(self, request):
+        pass
