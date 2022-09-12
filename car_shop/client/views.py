@@ -7,6 +7,7 @@ from client.filters import ClientFilter
 from client.models import Client
 from client.permissions import IsAdminOrSuperUserForUpdate
 from client.serializers import ClientSerializer
+from client.statistics import get_costs, get_own_cars
 from django_filters.rest_framework import DjangoFilterBackend
 from shop.models import ShopHistory
 from shop.serializers import ShopHistorySerializer
@@ -80,6 +81,12 @@ class ClientViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         else:
             return Response({"detail": "client doesn't have history"}, status=status.HTTP_404_NOT_FOUND)
 
-    @action(detail=False, methods=["get"])
-    def statistics(self, request):
-        pass
+    @action(detail=True, methods=["get"], url_path="cars")
+    def own_cars(self, request, pk=None):
+        cars = get_own_cars(pk)
+        return Response(cars, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"])
+    def costs(self, request, pk=None):
+        cars = get_costs(pk)
+        return Response(cars, status=status.HTTP_200_OK)

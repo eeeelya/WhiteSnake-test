@@ -10,6 +10,7 @@ from shop.filters import ShopFilter
 from shop.models import Shop, ShopCar, ShopHistory, ShopSale
 from shop.permissions import IsAdminOrSuperUserForUpdate, IsShopOrSuperUser
 from shop.serializers import ShopCarSerializer, ShopHistorySerializer, ShopSaleSerializer, ShopSerializer
+from shop.statistics import get_cars_price, get_clients_popular_countries, get_costs, get_proceeds
 
 
 class ShopViewSet(viewsets.GenericViewSet):
@@ -110,9 +111,23 @@ class ShopViewSet(viewsets.GenericViewSet):
         else:
             return Response({"detail": "shop doesn't have history with providers"}, status=status.HTTP_404_NOT_FOUND)
 
-    @action(detail=False, methods=["get"])
-    def statistics(self, request):
-        pass
+    @action(detail=True, methods=["get"])
+    def cash_account(self, request, pk=None):
+        data = {}
+
+        costs = get_costs(pk)
+        data["costs"] = costs["total_costs"]
+        proceeds = get_proceeds(pk)
+        data["proceeds"] = proceeds["total_proceeds"]
+        data["profit"] = proceeds["total_proceeds"] - costs["total_costs"]
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"])
+    def popular_countries(self, request, pk=None):
+        countries = get_clients_popular_countries(pk)
+
+        return Response(countries, status=status.HTTP_200_OK)
 
 
 class ShopSaleViewSet(viewsets.GenericViewSet):

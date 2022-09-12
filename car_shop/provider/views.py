@@ -13,6 +13,7 @@ from provider.serializers import (
     ProviderSaleSerializer,
     ProviderSerializer,
 )
+from provider.statistics import get_sold_cars, get_unsold_cars
 
 
 class ProviderViewSet(viewsets.GenericViewSet):
@@ -94,9 +95,17 @@ class ProviderViewSet(viewsets.GenericViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=["get"])
-    def statistics(self, request):
-        pass
+    @action(detail=True, methods=["get"])
+    def sold_cars(self, request, pk=None):
+        sold_cars = get_sold_cars(pk)
+
+        return Response(sold_cars, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"])
+    def unsold_cars(self, request, pk=None):
+        unsold_cars = get_unsold_cars(pk)
+
+        return Response(unsold_cars, status=status.HTTP_200_OK)
 
 
 class ProviderSaleViewSet(viewsets.GenericViewSet):
