@@ -33,7 +33,7 @@ def check_shop_sales(shop):
 
 @shared_task
 def buy_car():
-    shops = Shop.objects.filter(is_active=True)
+    shops = Shop.objects.filter(user__email_confirmed=True, is_active=True)
 
     for shop in shops:
         specification = shop.specification.copy()
@@ -84,8 +84,7 @@ def buy_car():
 
 @shared_task
 def sell_car():
-    # TODO filter email confirmed
-    clients = Client.objects.filter(is_active=True)
+    clients = Client.objects.filter(user__email_confirmed=True, is_active=True)
 
     for client in clients:
         specification = client.specification.copy()

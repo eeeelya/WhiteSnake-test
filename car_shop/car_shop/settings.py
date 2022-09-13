@@ -14,6 +14,8 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+import django.core.mail.backends.base
+
 from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -50,7 +52,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "drf_yasg",
     "django_filters",
-    # "djoser",
+    "djoser",
     # 'rest_framework_simplejwt.token_blacklist',
 ]
 
@@ -219,4 +221,19 @@ CELERY_BEAT_SCHEDULE = {
     #     'task': 'shop.tasks.sell_car',
     #     'schedule': crontab(minute="*/1")
     # }
+}
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+DJOSER = {
+    "PASSWORD_RESET_CONFIRM_URL": "api/v1/core/user/password/reset/confirm/{uid}/{token}/",
+    "USERNAME_RESET_CONFIRM_URL": "api/v1/core/user/username/reset/confirm/{uid}/{token}/",
+    "ACTIVATION_URL": "api/v1/core/user/activate/{uid}/{token}/",
+    "SEND_ACTIVATION_EMAIL": True,
+    "SERIALIZERS": {
+        "user": "core.serializers.UserSerializer",
+        "current_user": "core.serializers.UserSerializer",
+        "user_create": "core.serializers.UserSerializer",
+        "activation": "core.serializers.ActivationSerializer",
+    },
 }

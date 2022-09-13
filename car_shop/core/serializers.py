@@ -1,7 +1,11 @@
+from abc import ABC
+
 from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.validators import UniqueValidator
 
 from core.models import Car, Sale, User
+from djoser.serializers import UidAndTokenSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -44,6 +48,15 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+class ActivationSerializer(UidAndTokenSerializer):
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        if not self.user.email_confirmed:
+            self.user.email_confirmed = True
+            return attrs
+        raise PermissionDenied("stale_token")
 
 
 class CarSerializer(serializers.ModelSerializer):

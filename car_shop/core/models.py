@@ -66,9 +66,7 @@ class User(AbstractUser):
     )
 
     user_type = models.IntegerField(choices=USER_TYPE_CHOICES, default=0)
-    # email_confirmed = models.BooleanField(default=False)
-
-    # USERNAME_FIELD = 'email'
+    email_confirmed = models.BooleanField(default=False)
 
     class Meta:
         db_table = "user"
