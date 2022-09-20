@@ -14,7 +14,6 @@ from shop.statistics import get_cars_price, get_clients_popular_countries, get_c
 
 
 class ShopViewSet(viewsets.GenericViewSet):
-    queryset = Shop.objects.all()
     permission_classes = (IsAuthenticated, UpdatePermission)
     serializer_class = ShopSerializer
     filter_backends = (DjangoFilterBackend,)
@@ -134,12 +133,18 @@ class ShopViewSet(viewsets.GenericViewSet):
 
 
 class ShopSaleViewSet(viewsets.GenericViewSet):
-    queryset = ShopSale.objects.all()
     permission_classes = (IsAuthenticated, GetPermission)
     serializer_class = ShopSaleSerializer
 
     def get_queryset(self):
         return ShopSale.objects.filter(shop__user=self.request.user.pk, is_active=True)
+
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def list(self, request):
         sales = self.get_queryset()
@@ -152,21 +157,6 @@ class ShopSaleViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer(instance)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def create(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def delete(self, request, pk=None):
-        instance = self.get_object()
-
-        instance.is_active = False
-        instance.save()
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def update(self, request, pk=None):
         instance = self.get_object()
@@ -185,3 +175,11 @@ class ShopSaleViewSet(viewsets.GenericViewSet):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk=None):
+        instance = self.get_object()
+
+        instance.is_active = False
+        instance.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

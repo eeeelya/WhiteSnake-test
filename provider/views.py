@@ -17,11 +17,10 @@ from provider.statistics import get_sold_cars, get_unsold_cars
 
 
 class ProviderViewSet(viewsets.GenericViewSet):
-    queryset = Provider.objects.all()
     permission_classes = (IsAuthenticated, UpdatePermission)
     serializer_class = ProviderSerializer
     filter_backends = (DjangoFilterBackend,)
-    filterset_class = ProviderFilter
+    filter_class = ProviderFilter
 
     def get_queryset(self):
         return Provider.objects.filter(is_active=True)
@@ -103,12 +102,18 @@ class ProviderViewSet(viewsets.GenericViewSet):
 
 
 class ProviderSaleViewSet(viewsets.GenericViewSet):
-    queryset = ProviderSale.objects.all()
     permission_classes = (IsAuthenticated, IsProviderOrSuperUser)
     serializer_class = ProviderSaleSerializer
 
     def get_queryset(self):
         return ProviderSale.objects.filter(provider__user=self.request.user.pk, is_active=True)
+
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def list(self, request):
         sales = self.get_queryset()
@@ -121,21 +126,6 @@ class ProviderSaleViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer(instance)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def create(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def delete(self, request, pk=None):
-        instance = self.get_object()
-
-        instance.is_active = False
-        instance.save()
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def update(self, request, pk=None):
         instance = self.get_object()
@@ -154,3 +144,11 @@ class ProviderSaleViewSet(viewsets.GenericViewSet):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk=None):
+        instance = self.get_object()
+
+        instance.is_active = False
+        instance.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

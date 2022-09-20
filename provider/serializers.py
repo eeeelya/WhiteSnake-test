@@ -1,5 +1,6 @@
 import datetime
 
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from core.models import User
@@ -7,7 +8,6 @@ from provider.models import Provider, ProviderCar, ProviderHistory, ProviderSale
 
 
 class ProviderSerializer(serializers.ModelSerializer):
-    # TODO required and other extra kwargs
     class Meta:
         model = Provider
         fields = (
@@ -20,7 +20,7 @@ class ProviderSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        user = User.objects.get(id=self.context["request"].user.id)
+        user = get_object_or_404(User, id=self.context["request"].user.id)
 
         return Provider.objects.create(user=user, **validated_data)
 
@@ -66,7 +66,8 @@ class ProviderSaleSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        provider = Provider.objects.get(user=self.context["request"].user.id)
+        provider = get_object_or_404(Provider, user=self.context["request"].user.id)
+
         return ProviderSale.objects.create(provider=provider, **validated_data)
 
     def update(self, instance, validated_data):

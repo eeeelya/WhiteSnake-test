@@ -7,21 +7,20 @@ from core.models import Car
 from provider.models import Provider, ProviderCar, ProviderHistory, ProviderSale
 from shop.models import Shop, ShopCar, ShopHistory, ShopSale
 
-EXTRA_CHARGE = 1.3
+EXTRA_CHARGE = Decimal(1.3)
 
 
-# TODO change float to decimal
-def check_provider_sales(provider, shop) -> float:
+def check_provider_sales(provider, shop) -> Decimal:
     provider_sales = ProviderSale.objects.filter(provider=provider, shop=shop)
 
     total_sale = 0
     for sale in provider_sales:
         total_sale += sale.discount_amount
 
-    return total_sale
+    return Decimal(total_sale)
 
 
-def check_shop_sales(shop):
+def check_shop_sales(shop) -> Decimal:
     shop_sales = ShopSale.objects.filter(shop=shop)
 
     total_sale = 0
@@ -29,7 +28,7 @@ def check_shop_sales(shop):
         if sale.end_date < datetime.datetime.now() < sale.end_date:
             total_sale += sale.discount_amount
 
-    return total_sale
+    return Decimal(total_sale)
 
 
 @shared_task
@@ -71,7 +70,7 @@ def buy_car():
 
             shop_car = ShopCar.objects.update_or_create(shop=shop, car=car)
             if not shop_car[1]:
-                shop_car[0].price = total_price * Decimal(EXTRA_CHARGE)
+                shop_car[0].price = total_price * EXTRA_CHARGE
                 shop_car[0].updated = datetime.datetime.now()
                 shop_car[0].count += 1
                 shop_car[0].save()

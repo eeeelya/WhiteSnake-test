@@ -1,8 +1,9 @@
 import datetime
 
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from core.models import Car, User
+from core.models import User
 from shop.models import Shop, ShopCar, ShopHistory, ShopSale
 
 
@@ -18,7 +19,7 @@ class ShopSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        user = User.objects.get(id=self.context["request"].user.id)
+        user = get_object_or_404(User, id=self.context["request"].user.id)
 
         return Shop.objects.create(user=user, **validated_data)
 
@@ -64,7 +65,7 @@ class ShopSaleSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        shop = Shop.objects.get(user=self.context["request"].user.id)
+        shop = get_object_or_404(Shop, user=self.context["request"].user.id)
 
         return ShopSale.objects.create(shop=shop, **validated_data)
 

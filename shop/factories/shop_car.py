@@ -8,8 +8,8 @@ from shop.models import ShopCar
 class ShopCarFactory(DjangoModelFactory):
     shop = factory.SubFactory(ShopFactory)
     car = factory.SubFactory(CarFactory)
+    count = factory.Faker("pyint", min_value=0, max_value=1000)
     price = "10.00"
-    count = 10
 
     class Meta:
         model = ShopCar

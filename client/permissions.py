@@ -7,5 +7,4 @@ class UpdatePermission(permissions.BasePermission):
             if request.user.is_superuser or request.user.user_type == 4:
                 return True
             return False
-        else:
-            return True
+        return True
