@@ -3,13 +3,14 @@ import datetime
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from django_countries import fields
 
 
 class UserInformation(models.Model):
     location = fields.CountryField()
-    phone_number = models.CharField(null=True, max_length=13)
+    phone_number = models.CharField(null=True, validators=[RegexValidator(regex=r"^\+?1?\d{9,15}$")], max_length=12)
 
     class Meta:
         abstract = True
@@ -25,29 +26,27 @@ class SpecialInformation(models.Model):
 
 
 class Car(SpecialInformation):
-    FUEL_CHOICES = (
-        ("P", "Petrol"),
-        ("D", "Diesel"),
-        ("E", "Electric"),
-        ("H", "Hybrid"),
-        ("G", "Gas"),
-    )
+    class FuelType(models.TextChoices):
+        PETROL = "P", _("Petrol")
+        DIESEL = "D", _("Diesel")
+        ELECTRIC = "E", _("Electric")
+        HYBRID = "H", _("Hybrid")
+        CAS = "G", _("Gas")
 
-    CAR_TYPE_CHOICES = (
-        ("Cab", "Cabriolet"),
-        ("Van", "Minivan"),
-        ("Cou", "Coupe"),
-        ("Pic", "Pickup"),
-        ("Sed", "Sedan"),
-        ("Hat", "Hatchback"),
-    )
+    class CarType(models.TextChoices):
+        SEDAN = "Sed", _("Sedan")
+        CABRIOLET = "Cab", _("Cabriolet")
+        MINIVAN = "Van", _("Minivan")
+        COUPE = "Cou", _("Coupe")
+        PICKUP = "Pic", _("Pickup")
+        HATCHBACK = "Hat", _("Hatchback")
 
     name = models.CharField(default="", max_length=120)
     manufacture_year = models.PositiveIntegerField(
         validators=[MinValueValidator(1900), MaxValueValidator(datetime.date.today().year)]
     )
-    type = models.CharField(max_length=3, choices=CAR_TYPE_CHOICES, default="Sed")
-    fuel = models.CharField(max_length=1, choices=FUEL_CHOICES, default="P")
+    type = models.CharField(max_length=3, choices=CarType.choices, default=CarType.SEDAN)
+    fuel = models.CharField(max_length=1, choices=FuelType.choices, default=FuelType.PETROL)
     color = models.CharField(default="", max_length=20)
     description = models.TextField(blank=True)
 
@@ -56,15 +55,14 @@ class Car(SpecialInformation):
 
 
 class User(AbstractUser):
-    USER_TYPE_CHOICES = (
-        (0, "Unknown"),
-        (1, "Client"),
-        (2, "Provider"),
-        (3, "ShopManager"),
-        (4, "Admin"),
-    )
+    class UserType(models.IntegerChoices):
+        UNKNOWN = 0
+        CLIENT = 1
+        PROVIDER = 2
+        SHOP_MANAGER = 3
+        ADMIN = 4
 
-    user_type = models.IntegerField(choices=USER_TYPE_CHOICES, default=0)
+    user_type = models.IntegerField(choices=UserType.choices, default=UserType.UNKNOWN)
     email_confirmed = models.BooleanField(default=False)
 
     class Meta:

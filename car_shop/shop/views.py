@@ -27,10 +27,7 @@ class ShopViewSet(viewsets.GenericViewSet):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
-        if serializer.data:
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({"detail": "No active instances"}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk=None):
         instance = self.get_object()

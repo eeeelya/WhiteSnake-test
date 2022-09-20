@@ -3,11 +3,10 @@ version: '3.8'
 services:
   web:
     build: .
-#    command: gunicorn car_shop.wsgi:application --bind 0.0.0.0:8000
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn car_shop.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - .:/usr/src/app
-#      - static:/usr/src/app/static
+      - static:/usr/src/app/static
     ports:
       - "8000:8000"
     env_file:
@@ -55,18 +54,18 @@ services:
     env_file:
       - .env
 
-#  nginx:
-#    restart: always
-#    image: nginx:1.23-alpine
-#    expose:
-#      - 8080
-#    ports:
-#      - "80:8080"
-#    volumes:
-#      - static:/usr/src/app/static
-#    depends_on:
-#      - web
+  nginx:
+    restart: always
+    image: nginx:1.23-alpine
+    expose:
+      - 8080
+    ports:
+      - "80:8080"
+    volumes:
+      - static:/usr/src/app/static
+    depends_on:
+      - web
 
 volumes:
   postgres_data:
-#  static:
+  static:

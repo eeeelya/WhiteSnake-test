@@ -4,7 +4,7 @@ import factory.fuzzy
 from core.models import User
 from factory.django import DjangoModelFactory
 
-USER_TYPE_IDS = [x[0] for x in User.USER_TYPE_CHOICES]
+USER_TYPE_IDS = [x[0] for x in User.UserType.choices]
 
 
 class UserFactory(DjangoModelFactory):

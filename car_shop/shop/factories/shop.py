@@ -9,8 +9,7 @@ class ShopFactory(DjangoModelFactory):
     name = factory.Sequence(lambda n: "test-shop-%d" % n)
     specification = get_default_specification()
     balance = "200.00"
-    # cars
-    phone_number = factory.Sequence(lambda n: "123-456-789%d" % n)
+    phone_number = factory.Sequence(lambda n: "+123456789%d" % n)
     location = "BY"
     is_active = True
 

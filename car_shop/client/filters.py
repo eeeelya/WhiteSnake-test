@@ -5,7 +5,7 @@ from client.models import Client
 class ClientFilter(filters.FilterSet):
     age__gte = filters.NumberFilter(field_name="age", lookup_expr="gte")
     age__lte = filters.NumberFilter(field_name="age", lookup_expr="lte")
-    sex = filters.ChoiceFilter(choices=Client.SEX_CHOICES)
+    sex = filters.ChoiceFilter(choices=Client.Sex.choices)
     balance__gte = filters.NumberFilter(field_name="balance", lookup_expr="gte")
     balance__lte = filters.NumberFilter(field_name="balance", lookup_expr="lte")
 

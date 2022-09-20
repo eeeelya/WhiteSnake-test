@@ -1,29 +1,28 @@
 import requests
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from core.models import Car, User
+from core.permissions import IsAdmin
 from core.serializers import CarSerializer, UserSerializer
 
 
-class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class UserInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated, IsAdmin)
 
     def get_queryset(self):
         return User.objects.filter(is_active=True)
 
     def list(self, request):
+        self.permission_classes = (IsAdmin,)
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
-        if serializer.data:
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({"detail": "No active instances"}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, pk=None):
         instance = self.get_object()
@@ -32,6 +31,12 @@ class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         instance.save()
 
         return Response({"detail": "instance moved to inactive"}, status=status.HTTP_200_OK)
+
+
+class UserAuthViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (AllowAny,)
 
     @action(detail=False, methods=["get"], url_path=r"activate/(?P<uid>[\w-]+)/(?P<token>[\w-]+)")
     def activate_account(self, request, uid, token):
@@ -91,10 +96,7 @@ class CarViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.Gene
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
-        if serializer.data:
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({"detail": "No active instances"}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk=None):
         instance = self.get_object()
@@ -111,4 +113,4 @@ class CarViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.Gene
         instance.is_active = False
         instance.save()
 
-        return Response({"detail": "instance moved to inactive"}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)

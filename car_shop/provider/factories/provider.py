@@ -10,8 +10,7 @@ class ProviderFactory(DjangoModelFactory):
     foundation_year = 2000
     total_clients = 0
     balance = "200.00"
-    # cars
-    phone_number = factory.Sequence(lambda n: "123-456-789%d" % n)
+    phone_number = factory.Sequence(lambda n: "+123456789%d" % n)
     location = "BY"
     is_active = True
 

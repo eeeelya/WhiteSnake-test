@@ -58,7 +58,4 @@ class CarViewSetTest(APITestCase):
     def test_delete_car(self):
         response = self.api_client.delete(f"{self.endpoint}{self.users[0].id}/")
 
-        user_object = json.loads(response.content)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(user_object["detail"], "instance moved to inactive")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
