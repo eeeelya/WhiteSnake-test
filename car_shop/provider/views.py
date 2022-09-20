@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from provider.filters import ProviderFilter
 from provider.models import Provider, ProviderCar, ProviderHistory, ProviderSale
-from provider.permissions import IsAdminOrSuperUserForUpdate, IsProviderOrSuperUser
+from provider.permissions import IsProviderOrSuperUser, UpdatePermission
 from provider.serializers import (
     ProviderCarSerializer,
     ProviderHistorySerializer,
@@ -18,7 +18,7 @@ from provider.statistics import get_sold_cars, get_unsold_cars
 
 class ProviderViewSet(viewsets.GenericViewSet):
     queryset = Provider.objects.all()
-    permission_classes = (IsAuthenticated, IsAdminOrSuperUserForUpdate)
+    permission_classes = (IsAuthenticated, UpdatePermission)
     serializer_class = ProviderSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = ProviderFilter
@@ -47,7 +47,7 @@ class ProviderViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk=None):
         instance = self.get_object()
@@ -55,20 +55,17 @@ class ProviderViewSet(viewsets.GenericViewSet):
         instance.is_active = False
         instance.save()
 
-        return Response({"detail": "instance moved to inactive"}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def update(self, request, pk=None):
-        if "balance" in request.data:
-            instance = self.get_object()
+        instance = self.get_object()
 
-            serializer = self.get_serializer(instance, data=request.data)
+        serializer = self.get_serializer(instance, data=request.data)
 
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            self.partial_update(request, pk)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def partial_update(self, request, pk=None):
         instance = self.get_object()
@@ -133,7 +130,7 @@ class ProviderSaleViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk=None):
         instance = self.get_object()
@@ -141,7 +138,7 @@ class ProviderSaleViewSet(viewsets.GenericViewSet):
         instance.is_active = False
         instance.save()
 
-        return Response({"detail": "instance moved to inactive"}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def update(self, request, pk=None):
         instance = self.get_object()

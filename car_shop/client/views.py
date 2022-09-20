@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from client.filters import ClientFilter
 from client.models import Client
-from client.permissions import IsAdminOrSuperUserForUpdate
+from client.permissions import UpdatePermission
 from client.serializers import ClientSerializer
 from client.statistics import get_costs, get_own_cars
 from django_filters.rest_framework import DjangoFilterBackend
@@ -16,7 +16,7 @@ from shop.serializers import ShopHistorySerializer
 class ClientViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
-    permission_classes = (IsAuthenticated, IsAdminOrSuperUserForUpdate)
+    permission_classes = (IsAuthenticated, UpdatePermission)
     filter_backends = (DjangoFilterBackend,)
     filter_class = ClientFilter
 
@@ -34,32 +34,26 @@ class ClientViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     def retrieve(self, request, pk=None):
         instance = self.get_object()
-
         serializer = self.get_serializer(instance)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, pk=None):
         instance = self.get_object()
 
-        if not instance.is_active:
-            return Response({"detail": "instance is inactive"}, status=status.HTTP_400_BAD_REQUEST)
-
         instance.is_active = False
         instance.save()
 
-        return Response({"detail": "instance moved to inactive"}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def update(self, request, pk=None):
-        if "balance" in request.data:
-            instance = self.get_object()
-            serializer = self.get_serializer(instance, data=request.data)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
 
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            self.partial_update(request, pk)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def partial_update(self, request, pk=None):
         instance = self.get_object()

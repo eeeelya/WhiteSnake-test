@@ -65,6 +65,7 @@ def buy_car():
             provider_car.save()
 
             provider.balance += total_price
+            provider.total_clients += 1
             provider.save()
 
             shop_car = ShopCar.objects.update_or_create(shop=shop, car=car)

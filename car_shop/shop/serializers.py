@@ -25,7 +25,7 @@ class ShopSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.updated = datetime.datetime.now()
 
-        return instance
+        return super().update(instance, validated_data)
 
 
 class ShopCarSerializer(serializers.ModelSerializer):
@@ -47,7 +47,7 @@ class ShopHistorySerializer(serializers.ModelSerializer):
             "car",
             "shop",
             "price",
-            "date",
+            "purchase_time",
         )
 
 
@@ -57,18 +57,18 @@ class ShopSaleSerializer(serializers.ModelSerializer):
         fields = (
             "car",
             "name",
-            "start_date",
-            "end_date",
+            "start_datetime",
+            "end_datetime",
             "discount_amount",
             "description",
         )
 
     def create(self, validated_data):
-        provider = Car.objects.get(user=self.context["request"].user.id)
+        shop = Shop.objects.get(user=self.context["request"].user.id)
 
-        return ShopSale.objects.create(car=provider, **validated_data)
+        return ShopSale.objects.create(shop=shop, **validated_data)
 
     def update(self, instance, validated_data):
         instance.updated = datetime.datetime.now()
 
-        return instance
+        return super().update(instance, validated_data)

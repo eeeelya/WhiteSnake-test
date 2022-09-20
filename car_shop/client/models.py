@@ -8,10 +8,10 @@ def get_default_specification():
     return {
         "name": "",
         "price": "",
-        "manufacture_year": "",
+        "manufacture_year": 0,
         "type": "",
         "fuel": "",
-        "color": 0,
+        "color": "",
     }
 
 

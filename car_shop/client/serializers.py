@@ -14,6 +14,7 @@ class ClientSerializer(serializers.ModelSerializer):
             "sex",
             "balance",
             "location",
+            "specification",
             "phone_number",
         )
 
@@ -25,4 +26,4 @@ class ClientSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.updated = datetime.datetime.now()
 
-        return instance
+        return super().update(instance, validated_data)

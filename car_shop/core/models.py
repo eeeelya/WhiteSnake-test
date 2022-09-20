@@ -1,16 +1,15 @@
 import datetime
 
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 
 from django_countries import fields
-from phonenumber_field import modelfields
 
 
 class UserInformation(models.Model):
     location = fields.CountryField()
-    phone_number = modelfields.PhoneNumberField(unique=True, null=False, blank=False)
+    phone_number = models.CharField(null=True, max_length=13)
 
     class Meta:
         abstract = True
@@ -74,8 +73,8 @@ class User(AbstractUser):
 
 class Sale(SpecialInformation):
     name = models.CharField(default="", max_length=120)
-    start_date = models.DateTimeField(default=datetime.datetime.now)
-    end_date = models.DateTimeField(default=datetime.datetime.now)
+    start_datetime = models.DateTimeField(default=datetime.datetime.now)
+    end_datetime = models.DateTimeField(default=datetime.datetime.now)
     discount_amount = models.DecimalField(
         default=0, max_digits=5, decimal_places=2, validators=[MinValueValidator(0.00), MaxValueValidator(100.00)]
     )

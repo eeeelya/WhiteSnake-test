@@ -8,14 +8,14 @@ from provider.models import ProviderHistory
 from provider.serializers import ProviderHistorySerializer
 from shop.filters import ShopFilter
 from shop.models import Shop, ShopCar, ShopHistory, ShopSale
-from shop.permissions import IsAdminOrSuperUserForUpdate, IsShopOrSuperUser
+from shop.permissions import GetPermission, UpdatePermission
 from shop.serializers import ShopCarSerializer, ShopHistorySerializer, ShopSaleSerializer, ShopSerializer
 from shop.statistics import get_cars_price, get_clients_popular_countries, get_costs, get_proceeds
 
 
 class ShopViewSet(viewsets.GenericViewSet):
     queryset = Shop.objects.all()
-    permission_classes = (IsAuthenticated, IsAdminOrSuperUserForUpdate)
+    permission_classes = (IsAuthenticated, UpdatePermission)
     serializer_class = ShopSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class = ShopFilter
@@ -44,9 +44,9 @@ class ShopViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def destroy(self, request, pk=None):
+    def delete(self, request, pk=None):
         instance = self.get_object()
 
         if not instance.is_active:
@@ -55,7 +55,7 @@ class ShopViewSet(viewsets.GenericViewSet):
         instance.is_active = False
         instance.save()
 
-        return Response({"detail": "instance moved to inactive"}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def update(self, request, pk=None):
         if "balance" in request.data:
@@ -80,7 +80,7 @@ class ShopViewSet(viewsets.GenericViewSet):
 
     @action(detail=True, methods=["get"])
     def cars(self, request, pk=None):
-        cars = ShopCar.objects.filter(provider=pk)
+        cars = ShopCar.objects.filter(shop=pk)
 
         serializer = ShopCarSerializer(cars, many=True)
 
@@ -89,9 +89,9 @@ class ShopViewSet(viewsets.GenericViewSet):
         else:
             return Response({"detail": "shop doesn't have cars"}, status=status.HTTP_404_NOT_FOUND)
 
-    @action(detail=True, methods=["get"])
+    @action(detail=True, url_path="clients-history", methods=["get"])
     def clients_history(self, request, pk=None):
-        history = ShopHistory.objects.filter(provider=pk)
+        history = ShopHistory.objects.filter(shop=pk)
 
         serializer = ShopHistorySerializer(history, many=True)
 
@@ -100,9 +100,9 @@ class ShopViewSet(viewsets.GenericViewSet):
         else:
             return Response({"detail": "shop doesn't have history with clients"}, status=status.HTTP_404_NOT_FOUND)
 
-    @action(detail=True, methods=["get"])
+    @action(detail=True, url_path="providers-history", methods=["get"])
     def providers_history(self, request, pk=None):
-        history = ProviderHistory.objects.filter(provider=pk)
+        history = ProviderHistory.objects.filter(shop=pk)
 
         serializer = ProviderHistorySerializer(history, many=True)
 
@@ -111,7 +111,13 @@ class ShopViewSet(viewsets.GenericViewSet):
         else:
             return Response({"detail": "shop doesn't have history with providers"}, status=status.HTTP_404_NOT_FOUND)
 
-    @action(detail=True, methods=["get"])
+    @action(detail=True, url_path="cars-price", methods=["get"])
+    def cars_price(self, request, pk=None):
+        cars_price = get_cars_price(pk)
+
+        return Response(cars_price, status=status.HTTP_200_OK)
+
+    @action(detail=True, url_path="cash-account", methods=["get"])
     def cash_account(self, request, pk=None):
         data = {}
 
@@ -123,7 +129,7 @@ class ShopViewSet(viewsets.GenericViewSet):
 
         return Response(data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["get"])
+    @action(detail=True, url_path="popular-countries", methods=["get"])
     def popular_countries(self, request, pk=None):
         countries = get_clients_popular_countries(pk)
 
@@ -132,7 +138,7 @@ class ShopViewSet(viewsets.GenericViewSet):
 
 class ShopSaleViewSet(viewsets.GenericViewSet):
     queryset = ShopSale.objects.all()
-    permission_classes = (IsAuthenticated, IsShopOrSuperUser)
+    permission_classes = (IsAuthenticated, GetPermission)
     serializer_class = ShopSaleSerializer
 
     def get_queryset(self):
@@ -155,7 +161,7 @@ class ShopSaleViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk=None):
         instance = self.get_object()
@@ -163,7 +169,7 @@ class ShopSaleViewSet(viewsets.GenericViewSet):
         instance.is_active = False
         instance.save()
 
-        return Response({"detail": "instance moved to inactive"}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def update(self, request, pk=None):
         instance = self.get_object()

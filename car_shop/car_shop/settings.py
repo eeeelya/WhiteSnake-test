@@ -213,14 +213,8 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
 CELERY_BEAT_SCHEDULE = {
-    # 'buy_car': {
-    #     'task': 'shop.tasks.buy_car',
-    #     'schedule': crontab(minute="*/1")
-    # },
-    # 'sell_car': {
-    #     'task': 'shop.tasks.sell_car',
-    #     'schedule': crontab(minute="*/1")
-    # }
+    "buy_car": {"task": "shop.tasks.buy_car", "schedule": crontab(minute="*/1")},
+    "sell_car": {"task": "shop.tasks.sell_car", "schedule": crontab(minute="*/1")},
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

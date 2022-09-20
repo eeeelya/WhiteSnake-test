@@ -26,7 +26,7 @@ class ProviderSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.updated = datetime.datetime.now()
 
-        return instance
+        return super().update(instance, validated_data)
 
 
 class ProviderCarSerializer(serializers.ModelSerializer):
@@ -58,8 +58,8 @@ class ProviderSaleSerializer(serializers.ModelSerializer):
         fields = (
             "shop",
             "name",
-            "start_date",
-            "end_date",
+            "start_datetime",
+            "end_datetime",
             "discount_amount",
             "description",
         )
@@ -71,4 +71,4 @@ class ProviderSaleSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.updated = datetime.datetime.now()
 
-        return instance
+        return super().update(instance, validated_data)

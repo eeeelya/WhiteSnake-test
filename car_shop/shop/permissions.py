@@ -1,30 +1,22 @@
 from rest_framework import permissions
 
 
-class IsAdminOrSuperUserForUpdate(permissions.BasePermission):
-    edit_method = "PUT"
-
+class UpdatePermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        if request.method == self.edit_method:
+        if request.method == "PUT":
             if request.user.is_superuser or request.user.user_type == 4:
                 return True
-            else:
-                return False
+            return False
+        elif request.method == "PATCH" and "balance" in request.data:
+            if request.user.is_superuser or request.user.user_type == 4:
+                return True
         else:
             return True
 
 
-class IsShopOrSuperUser(permissions.BasePermission):
+class GetPermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        if request.method == "GET":
-            if request.user.user_type == 3:
-                return True
-            else:
-                return False
-        elif request.method == ("PUT", "PATCH"):
-            if request.user.is_superuser or request.user.user_type == 3:
-                return True
-            else:
-                return False
+        if request.method == "GET" and request.user.user_type == 3:
+            return True
         else:
             return True

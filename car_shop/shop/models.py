@@ -23,7 +23,7 @@ class Shop(SpecialInformation, UserInformation):
     name = models.CharField(default="", max_length=120)
     cars = models.ManyToManyField(Car, through="ShopCar")
     specification = models.JSONField(default=get_default_specification)
-    balance = models.DecimalField(default=0, max_digits=12, decimal_places=0, validators=[MinValueValidator(0.00)])
+    balance = models.DecimalField(default=0, max_digits=12, decimal_places=2, validators=[MinValueValidator(0.00)])
 
     class Meta:
         db_table = "shop"
@@ -44,7 +44,7 @@ class ShopHistory(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     price = models.DecimalField(default=0, max_digits=12, decimal_places=2, validators=[MinValueValidator(0.00)])
-    date = models.DateTimeField(default=datetime.datetime.now)
+    purchase_time = models.DateTimeField(default=datetime.datetime.now)
 
     class Meta:
         db_table = "shop_history"
