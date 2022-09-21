@@ -1,1 +1,7 @@
-*
+.env
+*/__pycache__/*
+*/migrations/*
+*.py[cod]
+*.idea*
+celerybeat-schedule
+.pytest_cache
