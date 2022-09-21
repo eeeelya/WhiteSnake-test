@@ -10,18 +10,15 @@ from provider.factories.provider_sale import ProviderSaleFactory
 
 
 class ProviderSaleViewSetTest(APITestCase):
-    def setUp(self) -> None:
-        self.endpoint = "/api/v1/provider/sales/"
-        self.api_client = APIClient()
+    @classmethod
+    def setUp(cls) -> None:
+        cls.endpoint = "/api/v1/provider/sales/"
 
-    def test_create(self):
         user = UserFactory(user_type=2)
-        self.api_client.credentials(HTTP_AUTHORIZATION=get_token(user))
         provider = ProviderFactory(user=user)
-
         provider_sale = ProviderSaleFactory(provider=provider)
 
-        data = {
+        cls.data = {
             "name": provider_sale.name,
             "shop": provider_sale.shop.id,
             "start_datetime": provider_sale.start_datetime,
@@ -29,77 +26,64 @@ class ProviderSaleViewSetTest(APITestCase):
             "discount_amount": provider_sale.discount_amount,
             "description": provider_sale.description,
         }
-        response = self.api_client.post(self.endpoint, data)
+
+        cls.user = user
+        cls.provider = provider
+        cls.provider_sale = provider_sale
+        cls.provider_sales = ProviderSaleFactory.create_batch(2)
+
+    def authenticate_client(self):
+        api_client = APIClient()
+        api_client.credentials(HTTP_AUTHORIZATION=get_token(self.user))
+
+        return api_client
+
+    def test_create(self):
+        api_client = self.authenticate_client()
+
+        response = api_client.post(self.endpoint, self.data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_list(self):
-        user = UserFactory(user_type=2)
-        self.api_client.credentials(HTTP_AUTHORIZATION=get_token(user))
-        provider = ProviderFactory(user=user)
-        ProviderSaleFactory(provider=provider)
+        api_client = self.authenticate_client()
 
-        response = self.api_client.get(self.endpoint)
+        response = api_client.get(self.endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(json.loads(response.content)), 1)
 
     def test_retrieve(self):
-        user = UserFactory(user_type=2)
-        self.api_client.credentials(HTTP_AUTHORIZATION=get_token(user))
-        provider = ProviderFactory(user=user)
-        provider_sale = ProviderSaleFactory(provider=provider)
+        api_client = self.authenticate_client()
 
-        response = self.api_client.get(f"{self.endpoint}{provider_sale.id}/")
+        response = api_client.get(f"{self.endpoint}{self.provider_sale.id}/")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(json.loads(response.content)), 6)
 
     def test_update(self):
-        user = UserFactory(user_type=2)
-        self.api_client.credentials(HTTP_AUTHORIZATION=get_token(user))
-        provider = ProviderFactory(user=user)
+        api_client = self.authenticate_client()
 
-        provider_sale = ProviderSaleFactory(provider=provider)
-        new_provider_sale = ProviderSaleFactory(provider=provider)
+        provider_sale = ProviderSaleFactory.build(provider=self.provider)
+        self.data["name"] = provider_sale.name
 
-        data = {
-            "name": new_provider_sale.name,
-            "shop": new_provider_sale.shop.id,
-            "start_datetime": new_provider_sale.start_datetime,
-            "end_datetime": new_provider_sale.end_datetime,
-            "discount_amount": new_provider_sale.discount_amount,
-            "description": new_provider_sale.description,
-        }
-
-        response = self.api_client.put(f"{self.endpoint}{provider_sale.id}/", data)
+        response = api_client.put(f"{self.endpoint}{self.provider_sale.id}/", self.data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_partial_update(self):
-        user = UserFactory(user_type=2)
-        self.api_client.credentials(HTTP_AUTHORIZATION=get_token(user))
-        provider = ProviderFactory(user=user)
+        api_client = self.authenticate_client()
 
-        provider_sale = ProviderSaleFactory(provider=provider)
-        new_provider_sale = ProviderSaleFactory(provider=provider)
+        new_provider_sale = ProviderSaleFactory(provider=self.provider)
+        new_data = {"start_datetime": new_provider_sale.start_datetime}
 
-        data = {
-            "start_datetime": new_provider_sale.start_datetime,
-            "end_datetime": new_provider_sale.end_datetime,
-            "discount_amount": new_provider_sale.discount_amount,
-        }
-
-        response = self.api_client.patch(f"{self.endpoint}{provider_sale.id}/", data)
+        response = api_client.patch(f"{self.endpoint}{self.provider_sale.id}/", new_data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_delete(self):
-        user = UserFactory(user_type=2)
-        self.api_client.credentials(HTTP_AUTHORIZATION=get_token(user))
-        provider = ProviderFactory(user=user)
-        provider_sale = ProviderSaleFactory(provider=provider)
+        api_client = self.authenticate_client()
 
-        response = self.api_client.delete(f"{self.endpoint}{provider_sale.id}/")
+        response = api_client.delete(f"{self.endpoint}{self.provider_sale.id}/")
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
